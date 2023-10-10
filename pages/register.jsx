@@ -16,6 +16,11 @@ const Register = () => {
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+  const [profilePicture, setProfilePicture] = useState(null);
+const [name, setName] = useState("");
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -28,10 +33,14 @@ const Register = () => {
     toast("Please wait Profile Uploading");
     setLoading(true);
     e.preventDefault();
-    const file = e.target[0].files[0];
-    const displayName = e.target[1].value;
-    const email = e.target[2].value;
-    const password = e.target[3].value;
+    // const file = e.target[0].files[0];
+    // const displayName = e.target[1].value;
+    // const email = e.target[2].value;
+    // const password = e.target[3].value;
+    const file = profilePicture;
+    const displayName = name;
+    const userEmail = email;
+    const userPassword = password;
 
     try {
       // Create user
@@ -81,56 +90,77 @@ const Register = () => {
       </div>
       <form onSubmit={handleSubmit} className="bg-slate-200 dark:bg-slate-900 p-5 text-sm w-full max-w-lg rounded-xl space-y-4">
         <h1 className="text-lg font-bold">Sign Up</h1>
-        {/* Profile Picture Input */}
         <div className="space-y-1">
           <div className="text-base">Profile Picture</div>
           <div>
-            <input
-              onChange={handleFileInputChange}
-              type="file"
-              accept="image/*"
-              className="rounded-md p-2 w-full"
-            />
+          <input
+  required
+  // style={{ display: "none" }}
+  type="file"
+  id="file"
+  name="profilePicture"
+  className="rounded-md p-2 w-full"
+  onChange={(e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setProfilePicture(file);
+      setSelectedImageUrl(imageUrl);
+    }
+  }}
+/>
+
           </div>
         </div>
         <div className="space-y-1">
           <div className="text-base">Name</div>
           <div>
-            <input
-                required
-                type="text"
-                placeholder="Name"
-                id="name"
-                name="name"
-              className="focus:outline focus:outline-1 focus:outline-slate-500 rounded-md p-2 w-full"
-            />
+          <input
+  required
+  type="text"
+  placeholder="Name"
+  id="name"
+  name="name"
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+  className="focus:outline focus:outline-1 focus:outline-slate-500 rounded-md p-2 w-full"
+/>
+
           </div>
         </div>
 
         <div className="space-y-1">
           <div className="text-base">Email</div>
           <div>
-            <input
-              required
-              type="email"
-              placeholder="email"
-              id="Email"
-              name="email"
-              className="focus:outline focus:outline-1 focus:outline-slate-500 rounded-md p-2 w-full"
-            />
+          <input
+  type="email"
+  required
+  placeholder="Email"
+  id="Email"
+  name="email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  className="focus:outline focus:outline-1 focus:outline-slate-500 rounded-md p-2 w-full"
+  
+/>
+
           </div>
         </div>
         <div className="space-y-1">
           <div className="text-base">Password</div>
           <div>
-            <input
-                type="password"
-                required
-                placeholder="Password"
-                id="password"
-                name="password"
-              className="focus:outline focus:outline-1 focus:outline-slate-500 rounded-md p-2 w-full"
-            />
+          <input
+  type="password"
+  required
+  placeholder="Password"
+  id="password"
+  name="password"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  className="focus:outline focus:outline-1 focus:outline-slate-500 rounded-md p-2 w-full"
+
+/>
+
           </div>
         </div>
         <div>

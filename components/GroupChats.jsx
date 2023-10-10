@@ -56,7 +56,7 @@ const GroupChats = () => {
             key={chat.id}
             onClick={() => handleSelect(chat)}
           >
-           <div className="h-16 text-amber-600 flex items-center mx-2 text-3xl">
+           <div className="h-16 flex items-center mx-2 text-3xl">
               <FaLayerGroup/>
             </div>
             <div className="userChatInfo">

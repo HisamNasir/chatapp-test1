@@ -73,7 +73,7 @@ const Input = () => {
   return (
     <div className="input flex gap-4 w-full items-center border">
       <input
-        className=" w-full p-4 bg-slate-200"
+        className=" w-full p-4 bg-slate-200 text-black"
         type="text"
         placeholder="Type something..."
         onChange={(e) => setText(e.target.value)}

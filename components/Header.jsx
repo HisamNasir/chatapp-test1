@@ -143,55 +143,38 @@ const Header = () => {
             <span className="sr-only">Close modal</span>
           </button>
         </div>
+        <div className="relative w-[98%]">
         <input
           type="text"
           placeholder="Enter group chat name"
           value={groupChatName}
           onChange={(e) => setGroupChatName(e.target.value)}
-          className="block w-full p-2 border rounded-md bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-300"
+          className="block border w-full p-2 m-2 bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-300"
         />
+
+        </div>
 
         <div className="space-y-6 h-[50vh] overflow-y-scroll">
           <div className="search w-full border-gray-400">
-            {users.map((user) => (
-              <div
-                key={user.uid}
-                className="userChat flex gap-4 bg-slate-600 hover:bg-slate-700 border-b-[1px] border-slate-800 text-white items-center p-2"
-                onClick={() => handleSelect(user)}
-              >
-                <img
-                  className="w-16 h-16 object-cover rounded-full"
-                  src={user.photoURL}
-                  alt=""
-                />
-                <div className="userChatInfo w-full">
-                  <span>{user.displayName}</span>
-                </div>
-                <select
-                  value={
-                    selectedUsers.includes(user.uid) ? "selected" : "unselected"
-                  }
-                  onChange={() => handleSelect(user)}
-                  className="block w-24 py-2 px-3 border rounded-md bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-300"
-                >
-                  <option value="unselected">Unselected</option>
-                  <option value="selected">Selected</option>
-                </select>
-              </div>
-            ))}
-            <div className="selectedUsers flex gap-3 text-white">
-              <h2 className="font-semibold">Selected Users:</h2>
-              {selectedUsers.map((userId) => {
-                const selectedUser = users.find((user) => user.uid === userId);
-                return (
-                  <div className="" key={userId}>
-                    {selectedUser ? (
-                      <span className="">{selectedUser.displayName}</span>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
+          {users.map((user) => (
+  <div
+    key={user.uid}
+    className="userChat flex gap-4 bg-slate-600 hover:bg-slate-700 border-b-[1px] border-slate-800 text-white items-center p-2"
+    onClick={() => handleSelect(user)}
+  >
+    <img
+      className="w-16 h-16 object-cover rounded-full"
+      src={user.photoURL}
+      alt=""
+    />
+    <div className="userChatInfo w-full">
+      <span>{user.displayName}</span>
+    </div>
+    <div className="block w-24 py-2 px-3 text-white">
+      {selectedUsers.includes(user.uid) ? "Selected" : "Unselected"}
+    </div>
+  </div>
+))}
           </div>
         </div>
         <div className="flex items-center p-6 space-x-2 border-t rounded-b border-gray-600">
