@@ -58,7 +58,7 @@ const LoginPage = () => {
             <p className=" text-slate-500">
               Dont have an account{" "}
               <Link
-                href="/SignupPage"
+                href="/signupPage"
                 className=" hover:text-black transition-colors delay-75"
               >
                 Signup
@@ -70,7 +70,6 @@ const LoginPage = () => {
             <button onClick={userLogin} className="w-full rounded-md p-2 text-center bg-slate-600 text-white hover:bg-slate-700 duration-500 transition-colors">
               Login
             </button>
-            <errorMessage/>
           </div>
         </div>
       </div>
