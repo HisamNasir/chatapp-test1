@@ -12,7 +12,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="sidebar  overflow-y-scroll min-w-[400px] h-[100%]">
+    <div className="sidebar bg-gray-500 bg-opacity-50  overflow-y-scroll min-w-[400px] h-[100%]">
       <div className="tabs grid grid-flow-col divide-x-[1px] text-center">
         <div
           className={`tab ${
