@@ -1,64 +1,210 @@
-import Link from "next/link";
+import React, { useContext, useState, useEffect } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
+import { AuthContext } from "../context/AuthContext";
+import { FaLayerGroup, FaSignOutAlt } from "react-icons/fa";
+import Modal from "react-modal";
+import { collection, addDoc, query, getDocs } from "firebase/firestore";
 
-import React, { useState, useEffect } from "react";
+import { db } from "../firebase";
 import DarkModButton from "./DarkModButton";
-import { FaComments, FaPowerOff } from "react-icons/fa";
-import { getAuth, signOut } from "firebase/auth";
-import { app } from "@/firebase";
+
+Modal.setAppElement("#__next");
 
 const Header = () => {
-  const auth = getAuth(app);
-  const [user, setUser] = useState(null);
+  const { currentUser } = useContext(AuthContext);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [users, setUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [groupChatName, setGroupChatName] = useState("");
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
+    const getUsers = async () => {
+      const q = collection(db, "users");
+      try {
+        const querySnapshot = await getDocs(q);
+        const userList = querySnapshot.docs.map((doc) => doc.data());
+        setUsers(userList);
+      } catch (err) {
+        console.error("Error fetching users:", err);
       }
-    });
+    };
 
-    return () => unsubscribe();
+    getUsers();
   }, []);
 
+  const handleSelect = (user) => {
+    setSelectedUsers((prevSelectedUsers) => {
+      if (prevSelectedUsers.includes(user.uid)) {
+        return prevSelectedUsers.filter((userId) => userId !== user.uid);
+      } else {
+        return [...prevSelectedUsers, user.uid];
+      }
+    });
+  };
+
+  const handleClearSelection = () => {
+    setSelectedUsers([]);
+  };
+
+  const handleAccept = async () => {
+    if (selectedUsers.length === 0) {
+      alert("Please select at least one user for the group chat.");
+      return;
+    }
+
+    if (!groupChatName) {
+      alert("Please enter a name for the group chat.");
+      return;
+    }
+
+    try {
+      const chatRef = await addDoc(collection(db, "chats"), {
+        name: groupChatName,
+        participants: [...selectedUsers, currentUser.uid],
+      });
+    } catch (error) {
+      console.error("Error creating group chat:", error);
+    }
+
+    closeModal();
+  };
+
   return (
-    <header className="h-[62px]">
-      <nav className="bg-white min-w-max dark:bg-gray-900 fixed w-full z-20 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
-        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-          <a href="/HomePage" className="flex gap-2 items-center">
-            <FaComments className="text-3xl" />
-            <h1 className=" text-xl">Chat App</h1>
-          </a>
-          <div className=" hidden sm:flex sm:gap-2 ">
-            {user ? (
-              <>
-                <div>img</div>
-                <div>{user.email}</div>
-              </>
-            ) : null}
-          </div>
-          <div className="flex gap-2 md:order-2">
-            <DarkModButton />
-            <div className=" sm:hidden flex">
-              {user ? (
-                <>
-                  <div>img</div>
-                </>
-              ) : null}
-            </div>
-            {user ? (
-              <button
-                className="bg-gray-800 flex dark:bg-gray-50 hover:bg-gray-600 gap-2 dark:hover:bg-gray-300 transition-all duration-100 text-white dark:text-gray-800 px-2 py-1 text-sm items-center md:text-sm rounded-lg "
-                onClick={() => signOut(auth)}
+    <div className="navbar font-semibold bg-grey-800 bg-gray-500 bg-opacity-40 h-[62px]">
+      <div className=" justify-between px-4 flex items-center h-full">
+        <img
+          className="h-8 w-8 container rounded-full object-cover"
+          src={currentUser.photoURL}
+          alt=""
+        />
+        <span className="text-center text-4xl col-span-3">
+          {currentUser.displayName}
+        </span>
+        <div className="flex justify-end text-end">
+          <button
+            className="block focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            type="button"
+            onClick={openModal}
+          >
+            <FaLayerGroup />
+          </button>
+          <button
+            className="text-2xl  px-2  flex gap-2 items-center justify-end"
+            onClick={() => signOut(auth)}
+          >
+            <FaSignOutAlt />{" "}
+          </button>
+          <DarkModButton/>
+        </div>
+      </div>
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Default Modal"
+        overlayClassName="fixed top-0 left-0 right-0 z-50 w-full h-full bg-black bg-opacity-60 flex items-center justify-center"
+        className="relative w-full max-w-2xl max-h-full  rounded-lg shadow bg-gray-700"
+      >
+        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-600">
+          <h3 className="text-xl font-semibold ">
+            Create a group
+            <span className="text-gray-400 text-sm ml-2">
+              ({selectedUsers.length} selected)
+            </span>
+          </h3>
+          <button
+            type="button"
+            className="text-gray-400 bg-transparent rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
+            onClick={closeModal}
+          >
+            <svg
+              className="w-3 h-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 14"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+              />
+            </svg>
+            <span className="sr-only">Close modal</span>
+          </button>
+        </div>
+        <input
+          type="text"
+          placeholder="Enter group chat name"
+          value={groupChatName}
+          onChange={(e) => setGroupChatName(e.target.value)}
+          className="block w-full p-2 border rounded-md bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-300"
+        />
+
+        <div className="space-y-6 h-[50vh] overflow-y-scroll">
+          <div className="search w-full border-gray-400">
+            {users.map((user) => (
+              <div
+                key={user.uid}
+                className="userChat flex gap-4 bg-slate-600 hover:bg-slate-700 border-b-[1px] border-slate-800 text-white items-center p-2"
+                onClick={() => handleSelect(user)}
               >
-                <FaPowerOff />
-              </button>
-            ) : null}
+                <img
+                  className="w-16 h-16 object-cover rounded-full"
+                  src={user.photoURL}
+                  alt=""
+                />
+                <div className="userChatInfo w-full">
+                  <span>{user.displayName}</span>
+                </div>
+                <select
+                  value={
+                    selectedUsers.includes(user.uid) ? "selected" : "unselected"
+                  }
+                  onChange={() => handleSelect(user)}
+                  className="block w-24 py-2 px-3 border rounded-md bg-slate-700 text-white focus:outline-none focus:ring focus:border-blue-300"
+                >
+                  <option value="unselected">Unselected</option>
+                  <option value="selected">Selected</option>
+                </select>
+              </div>
+            ))}
+            <div className="selectedUsers flex gap-3 text-white">
+              <h2 className="font-semibold">Selected Users:</h2>
+              {selectedUsers.map((userId) => {
+                const selectedUser = users.find((user) => user.uid === userId);
+                return (
+                  <div className="" key={userId}>
+                    {selectedUser ? (
+                      <span className="">{selectedUser.displayName}</span>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </nav>
-    </header>
+        <div className="flex items-center p-6 space-x-2 border-t rounded-b border-gray-600">
+          <button
+            type="button"
+            className="text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-slate-600 hover:bg-slate-700 focus:ring-slate-800"
+            onClick={handleAccept}
+          >
+            I accept
+          </button>
+        </div>
+      </Modal>
+    </div>
   );
 };
 
