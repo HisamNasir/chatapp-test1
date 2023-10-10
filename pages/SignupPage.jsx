@@ -1,21 +1,26 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Layout from "@/components/Layout";
-
-const SignupPage = (props) => {
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebase";
+const SignupPage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const registerUser = async () => {
+    try{
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (err){
+      console.error(err);
+    }
+  };
 
   return (
     <Layout>
       <div className=" flex min-w-max flex-col h-full justify-center items-center registerContainer">
-        <form
-          // onSubmit={registerUser}
-          className="bg-slate-200 dark:bg-slate-900  p-5 text-sm w-full max-w-lg rounded-xl space-y-4"
-        >
+        <div className="bg-slate-200 dark:bg-slate-900  p-5 text-sm w-full max-w-lg rounded-xl space-y-4">
           <h1 className=" text-lg font-bold">Sign Up</h1>
 
           <div className=" space-y-1">
@@ -82,11 +87,14 @@ const SignupPage = (props) => {
             </p>
           </div>
           <div>
-            <button className=" w-full rounded-md p-2 text-center bg-slate-600 text-white hover:bg-slate-700 duration-500 transition-colors">
+            <button
+              onClick={registerUser}
+              className=" w-full rounded-md p-2 text-center bg-slate-600 text-white hover:bg-slate-700 duration-500 transition-colors"
+            >
               Sign up
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </Layout>
   );
