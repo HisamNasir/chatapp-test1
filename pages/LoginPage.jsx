@@ -3,13 +3,16 @@ import Link from "next/link";
 import Layout from "@/components/Layout";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase";
+import { useRouter } from "next/router";
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const userLogin = async () => {
     try{
       await signInWithEmailAndPassword(auth, email, password);
+      router.push("/homePage");
     } catch (err){
       console.error(err);
       const errorCode = err.code;

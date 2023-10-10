@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Layout from "@/components/Layout";
-import { createUserWithEmailAndPassword, updateProfile  } from "firebase/auth";
+import { applyActionCode, createUserWithEmailAndPassword, updateProfile  } from "firebase/auth";
 import { auth, firestore } from "@/firebase";
 import { collection, doc, setDoc, getFirestore} from "firebase/firestore";
 
@@ -24,23 +24,6 @@ const SignupPage = () => {
       );
       const user = userCredential.user;
 
-      // Update user profile with additional information
-      await updateProfile(user, {
-        displayName: `${firstName} ${lastName}`,
-        photoURL: profilePicture ? URL.createObjectURL(profilePicture) : null,
-      });
-
-  
-      // Save user's name and profile picture data to Firestore
-      const db = getFirestore(firestore);
-      const userLinksCollectionRef = collection(db, "users", user.uid, "links");
-      await setDoc(doc(userLinksCollectionRef, "example_document_id"), {
-        // Your document data here
-        someField: "someValue",
-      });
-
-      console.log("User signed up successfully!");
-
       // Additional steps if needed
 
     } catch (err) {
@@ -57,7 +40,7 @@ const SignupPage = () => {
 
   return (
     <Layout>
-      <div className=" flex min-w-max flex-col h-full justify-center items-center registerContainer">
+      <div className=" flex min-w-max flex-col h-full justify-center items-center ">
         <div className="bg-slate-200 dark:bg-slate-900  p-5 text-sm w-full max-w-lg rounded-xl space-y-4">
           <h1 className=" text-lg font-bold">Sign Up</h1>
                     {/* Profile Picture Input */}
