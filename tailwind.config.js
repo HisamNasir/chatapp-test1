@@ -7,7 +7,7 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-
+  darkMode: ["class"],
   // Customize your project's theme by extending Tailwind CSS's default configuration.
   theme: {
     extend: {

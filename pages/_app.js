@@ -6,14 +6,18 @@ import { Provider } from "react-redux";
 
 // Import your global styles (e.g., SCSS).
 import "@/styles/globals.scss";
+import { ThemeProvider } from "next-themes";
 
 // Define your main application component.
 export default function App({ Component, pageProps }) {
   return (
-    // Wrap your entire application with the Provider component to make the Redux store available to your components.
+    <ThemeProvider attribute="class">
     <Provider store={store}>
       {/* Render the current page component (e.g., Home, About, etc.) with its props. */}
+  
       <Component {...pageProps} />
+
     </Provider>
+    </ThemeProvider>
   );
 }
