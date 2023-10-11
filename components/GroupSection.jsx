@@ -30,10 +30,10 @@ const GroupSection = () => {
   };
 
   return (
-    <div className="group-section">
-      <div className="group-chats">
+    <div className="group-section ">
+      <div className="group-chats ">
         {groupChats.map((chat) => (
-          <div
+          <div className="userChat hover:bg-slate-600 bg-opacity-50 flex gap-4 p-2 border-b-[1px]  cursor-pointer items-center"
             key={chat.id}
             onClick={() => handleSelectGroupChat(chat.id)}
           >

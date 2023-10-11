@@ -1,20 +1,30 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { db } from "../firebase";
-import { collection, doc, addDoc } from "firebase/firestore";
-import Input from "./Input";
-import Messages from "./Messages";
+import {
+  collection,
+  doc,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
+import GroupMessages from "./GroupMessages";
+import GroupInput from "./GroupInput";
 
 const GroupChat = ({ groupChatId }) => {
   const { currentUser } = useContext(AuthContext);
   const [text, setText] = useState("");
   const [messages, setMessages] = useState([]);
+  const groupChatRef = doc(db, "groupChats", groupChatId);
 
   useEffect(() => {
-    // Load group chat messages from groupchatsHistory collection
-    const groupChatRef = collection(db, "groupchatsHistory", groupChatId);
-    // Define a query to order messages by timestamp
-    const q = query(groupChatRef, orderBy("timestamp"));
+    if (!groupChatId) return;
+
+    const q = query(
+      collection(groupChatRef, "messages"),
+      orderBy("timestamp")
+    );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const chatMessages = [];
@@ -27,15 +37,18 @@ const GroupChat = ({ groupChatId }) => {
     return () => unsubscribe();
   }, [groupChatId]);
 
-  const handleSend = async () => {
+  const handleSend = async (text) => {
     if (text) {
-      const groupChatRef = collection(db, "groupchatsHistory", groupChatId);
-      await addDoc(groupChatRef, {
-        text,
-        senderId: currentUser.uid,
-        timestamp: new Date(),
-      });
-      setText("");
+      if (groupChatId) {
+        const newMessageRef = await addDoc(
+          collection(groupChatRef, "messages"),
+          {
+            text,
+            senderId: currentUser.uid,
+            timestamp: new Date(),
+          }
+        );
+      }
     }
   };
 
@@ -44,8 +57,8 @@ const GroupChat = ({ groupChatId }) => {
       <div className="group-chat-header">
         <h2>Group Chat Name</h2>
       </div>
-      <Messages messages={messages} />
-      <Input text={text} onTextChange={setText} onSend={handleSend} />
+      <GroupMessages messages={messages} />
+      <GroupInput onSend={handleSend} />
     </div>
   );
 };

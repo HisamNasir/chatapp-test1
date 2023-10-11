@@ -9,6 +9,9 @@ const Sidebar = () => {
 
   const handleTabClick = (tab) => {
     setSelectedTab(tab);
+    if (tab === "groupChats") {
+      setSelectedGroupChat(null); // Deselect group chat when clicking the "Group Chats" tab
+    }
   };
 
   return (
