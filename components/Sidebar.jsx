@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Navbar from "./Layout";
 import Search from "./Search";
 import Chats from "./Chats";
-import GroupChats from "./GroupChats";
+import GroupSection from "./GroupSection";
 
 const Sidebar = () => {
   const [selectedTab, setSelectedTab] = useState("chats");
@@ -24,16 +24,16 @@ const Sidebar = () => {
         </div>
         <div
           className={`tab ${
-            selectedTab === "groupChats" ? "active" : ""
+            selectedTab === "GroupSection" ? "active" : ""
           }  p-2 cursor-pointer  font-semibold `}
-          onClick={() => handleTabClick("groupChats")}
+          onClick={() => handleTabClick("GroupSection")}
         >
           Group Chats
         </div>
       </div>
       {selectedTab === "chats" ? <Search /> : null}
       <div className="">
-        {selectedTab === "chats" ? <Chats /> : <GroupChats />}
+        {selectedTab === "chats" ? <Chats /> : <GroupSection />}
       </div>
     </div>
   );

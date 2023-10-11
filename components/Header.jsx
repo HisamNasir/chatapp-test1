@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { AuthContext } from "../context/AuthContext";
-import { FaLayerGroup, FaSignOutAlt } from "react-icons/fa";
+import { FaAddressBook, FaSignOutAlt } from "react-icons/fa";
 import Modal from "react-modal";
 import { collection, addDoc, query, getDocs } from "firebase/firestore";
 
@@ -60,50 +60,57 @@ const Header = () => {
       alert("Please select at least one user for the group chat.");
       return;
     }
-
+  
     if (!groupChatName) {
       alert("Please enter a name for the group chat.");
       return;
     }
-
+  
     try {
-      const chatRef = await addDoc(collection(db, "chats"), {
+      const groupChatRef = await addDoc(collection(db, "GroupChats"), {
         name: groupChatName,
         participants: [...selectedUsers, currentUser.uid],
       });
+      const groupChatId = groupChatRef.id;
+  
+      // Create a "messages" subcollection for the group chat
+      await setDoc(doc(db, "GroupChats", groupChatId, "messages", { messages: [] }));
     } catch (error) {
       console.error("Error creating group chat:", error);
     }
-
+  
     closeModal();
   };
 
   return (
     <div className="navbar font-semibold bg-grey-800 bg-gray-500 bg-opacity-40 h-[62px]">
       <div className=" justify-between px-4 flex items-center h-full">
+        <div className="flex gap-2">
         <img
-          className="h-8 w-8 container rounded-full object-cover"
+          className="h-11 w-11 container rounded-full object-cover"
           src={currentUser.photoURL}
           alt=""
         />
-        <span className="text-center text-4xl col-span-3">
+        <span className=" text-4xl col-span-3">
           {currentUser.displayName}
         </span>
+        </div>
         <div className="flex justify-end text-end">
+        <DarkModButton/>
           <button
-            className="block focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            className="block focus:ring-4 text-xl focus:outline-none font-medium rounded-lg  px-5 py-2.5 text-center"
             type="button"
             onClick={openModal}
           >
-            <FaLayerGroup />
+            <FaAddressBook />
           </button>
           <button
-            className="text-2xl  px-2  flex gap-2 items-center justify-end"
+            className="text-xl flex gap-2 text-red-500 bg-black rounded-xl px-3 text-center items-center justify-end"
             onClick={() => signOut(auth)}
           >
             <FaSignOutAlt />{" "}
           </button>
-          <DarkModButton/>
+          
         </div>
       </div>
       <Modal
